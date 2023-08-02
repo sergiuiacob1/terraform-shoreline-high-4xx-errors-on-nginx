@@ -1,0 +1,182 @@
+{
+  "name": "high_4xx_errors_on_nginx",
+  "description": "This incident type is related to a high number of 4xx errors on NGINX upstreams. This error is higher than usual and requires investigation to identify the root cause. The incident description typically includes details on the percentage of anomalous errors, the query used to detect the errors, and other relevant information such as the event type, monitor state, and tags. The incident may require the attention of the software engineer or other relevant personnel to resolve the issue and prevent it from reoccurring in the future.",
+  "params": [
+    {
+      "name": "PATH_TO_NGINX_CONF_FILE",
+      "value": ""
+    },
+    {
+      "name": "IP_ADDRESS",
+      "value": ""
+    },
+    {
+      "name": "SETTING_NAME",
+      "value": ""
+    },
+    {
+      "name": "ERROR_MESSAGE",
+      "value": ""
+    },
+    {
+      "name": "UPSTREAM_SERVER_URL",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## High 4xx Errors on NGINX\nThis incident type is related to a high number of 4xx errors on NGINX upstreams. This error is higher than usual and requires investigation to identify the root cause. The incident description typically includes details on the percentage of anomalous errors, the query used to detect the errors, and other relevant information such as the event type, monitor state, and tags. The incident may require the attention of the software engineer or other relevant personnel to resolve the issue and prevent it from reoccurring in the future."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the status of the NGINX service"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `systemctl status nginx.service`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the NGINX error log for any relevant error messages"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `tail -n 100 /var/log/nginx/error.log | grep \"${ERROR_MESSAGE}\"`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## View NGINX access logs to identify the sources of the 4xx errors"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `tail -n 100 /var/log/nginx/access.log | grep \" 4[0-9][0-9] \"`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the configuration file for any syntax errors"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `nginx -t`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the NGINX configuration file for any relevant settings"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `cat /etc/nginx/nginx.conf | grep \"${SETTING_NAME}\"`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the system load and resource usage"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `top`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check network connectivity between NGINX upstreams and clients/servers"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `ping ${IP_ADDRESS}`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check NGINX upstream servers for any issues"
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `curl -I ${UPSTREAM_SERVER_URL}`"
+    },
+    {
+      "name": "cell_18",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Define the path to the NGINX configuration file"
+    },
+    {
+      "name": "cell_19",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `NGINX_CONF=\"${PATH_TO_NGINX_CONF_FILE}\"`"
+    },
+    {
+      "name": "cell_20",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the configuration file exists"
+    },
+    {
+      "name": "cell_21",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_check_nginx_conf()"
+    },
+    {
+      "name": "cell_22",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the configuration file for any syntax errors"
+    },
+    {
+      "name": "cell_23",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "rq_non_kubectl_oneliner | `nginx -t -c \"$NGINX_CONF\"`"
+    },
+    {
+      "name": "cell_24",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Restart NGINX if the configuration file is valid"
+    },
+    {
+      "name": "cell_25",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_restart_nginx()"
+    }
+  ]
+}
